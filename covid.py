@@ -1,2 +1,2 @@
 import pygame as pyg
-print("Hello Github")
+print("Hello World")
