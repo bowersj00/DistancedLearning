@@ -1,13 +1,20 @@
 import pygame, math
 #GOAL: Make a golf game
-LENGTH_ONE = 120
-LENGTH_TWO = 90
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 700
+LENGTH_ONE = 80
+LENGTH_TWO = 60
 OMEGA = math.pi/15
-BALLX = 600
-BALLY = 350
+
+
+ballx = int(SCREEN_WIDTH/2)
+bally = int(SCREEN_HEIGHT/2)
+ball_x_acceleration = 20
+ball_y_acceleration = 20
+
 
 pygame.init()
-game_display = pygame.display.set_mode((1200,700))
+game_display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Mini Golf")
 clock = pygame.time.Clock()
 
@@ -18,7 +25,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-kite_points = (0,0)
+kite_points = ()
 
 def game_quit():
     pygame.quit()
@@ -45,10 +52,26 @@ def get_kite(angle, x, y):
     point_array.append(x)
     point_array.append(y)
     
-    
     return point_array
 
-# ball = pygame.draw.circle(game_display, WHITE, (0,0), 25)
+def ball_acceleration(cur_ball_x, cur_ball_y, ball_x_acceleration, ball_y_acceleration):
+    if ball_x_acceleration > 0:
+        ball_x_acceleration -= 1
+    elif ball_x_acceleration < 0:
+        ball_x_acceleration += 1
+
+    if ball_y_acceleration > 0:
+        ball_y_acceleration -= 1
+    elif ball_y_acceleration < 0:
+        ball_y_acceleration += 1
+    
+    new_x = cur_ball_x+ball_x_acceleration
+    new_y = cur_ball_y+ball_y_acceleration
+
+    return new_x, new_y, ball_x_acceleration, ball_y_acceleration
+
+def draw_ball(x,y):
+    pygame.draw.circle(game_display, WHITE, (x,y), 10)
 
 playing = True
 level = 0
@@ -59,13 +82,14 @@ while playing:
         if event.type == pygame.QUIT:
             game_quit()
 
-    game_display.fill(WHITE)
+    game_display.fill(GREEN)
 
-    kite_points = get_kite(math.pi/2, BALLX, BALLY)
+    ballx, bally, ball_x_acceleration, ball_y_acceleration = ball_acceleration(ballx, bally, ball_x_acceleration, ball_y_acceleration)
+    draw_ball(ballx, bally)
 
+    kite_points = get_kite(math.pi/2, ballx, bally)
     pygame.draw.polygon(game_display, BLACK, ((kite_points[0],kite_points[1]), (kite_points[2], kite_points[3]), (kite_points[4], kite_points[5]), (kite_points[6], kite_points[7])))
 
     pygame.display.update()
 
-    clock.tick(100)
-
+    clock.tick(60)
