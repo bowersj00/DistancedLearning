@@ -9,9 +9,11 @@ OMEGA = math.pi/15
 
 ballx = int(SCREEN_WIDTH/2)
 bally = int(SCREEN_HEIGHT/2)
-ball_x_acceleration = 20
-ball_y_acceleration = 20
+ball_x_acceleration = 0
+ball_y_acceleration = 0
+acceleration_factor = 30
 
+level_one_image = pygame.image.load("4-Bowers-minigolf_level_one.png")
 
 pygame.init()
 game_display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -70,25 +72,57 @@ def ball_acceleration(cur_ball_x, cur_ball_y, ball_x_acceleration, ball_y_accele
 
     return new_x, new_y, ball_x_acceleration, ball_y_acceleration
 
+def change_ball_position(cur_ball_x, cur_ball_y, ball_x_acceleration, ball_y_acceleration):
+    
+    new_x = cur_ball_x+ball_x_acceleration
+    new_y = cur_ball_y+ball_y_acceleration
+
+    return new_x, new_y
+
 def draw_ball(x,y):
     pygame.draw.circle(game_display, WHITE, (x,y), 10)
 
+def level_one_sprites(x,y):
+    game_display.blit(level_one_image, (x,y))
+
+def collision_check():
+    pass
+
 playing = True
-level = 0
+level = 1
 
 while playing:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                ball_x_acceleration -= acceleration_factor
+            if event.key == pygame.K_RIGHT:
+                ball_x_acceleration += acceleration_factor
+
+            if event.key == pygame.K_UP:
+                ball_y_acceleration -= acceleration_factor
+            if event.key == pygame.K_DOWN:
+                ball_y_acceleration += acceleration_factor
+            
 
     game_display.fill(GREEN)
+
+    if level == 1:
+        level_one_sprites(0,0)
+    elif level == 2:
+        pass
 
     ballx, bally, ball_x_acceleration, ball_y_acceleration = ball_acceleration(ballx, bally, ball_x_acceleration, ball_y_acceleration)
     draw_ball(ballx, bally)
 
-    kite_points = get_kite(math.pi/2, ballx, bally)
-    pygame.draw.polygon(game_display, BLACK, ((kite_points[0],kite_points[1]), (kite_points[2], kite_points[3]), (kite_points[4], kite_points[5]), (kite_points[6], kite_points[7])))
+    if ball_x_acceleration == 0 and ball_y_acceleration ==0:
+        kite_points = get_kite(math.pi/2, ballx, bally)
+        pygame.draw.polygon(game_display, BLACK, ((kite_points[0],kite_points[1]), (kite_points[2], kite_points[3]), (kite_points[4], kite_points[5]), (kite_points[6], kite_points[7])))
+
+
 
     pygame.display.update()
 
